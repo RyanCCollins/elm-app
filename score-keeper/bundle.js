@@ -7897,19 +7897,83 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		if (_p0.ctor === 'Input') {
-			return A2(
-				_elm_lang$core$Debug$log,
-				'Input model updated',
-				_elm_lang$core$Native_Utils.update(
-					model,
-					{name: _p0._0}));
-		} else {
-			return model;
-		}
+var _user$project$Main$pointTotal = function (model) {
+	var total = _elm_lang$core$List$sum(
+		A2(
+			_elm_lang$core$List$map,
+			function (_) {
+				return _.points;
+			},
+			model.plays));
+	return A2(
+		_elm_lang$html$Html$footer,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Total:')
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(
+						_elm_lang$core$Basics$toString(total))
+					]))
+			]));
+};
+var _user$project$Main$playerListHeader = A2(
+	_elm_lang$html$Html$header,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text('Name')
+				])),
+			A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text('Points')
+				]))
+		]));
+var _user$project$Main$edit = F2(
+	function (model, id) {
+		var newPlays = A2(
+			_elm_lang$core$List$map,
+			function (play) {
+				return _elm_lang$core$Native_Utils.eq(play.playerId, id) ? _elm_lang$core$Native_Utils.update(
+					play,
+					{name: model.name}) : play;
+			},
+			model.plays);
+		var newPlayers = A2(
+			_elm_lang$core$List$map,
+			function (player) {
+				return _elm_lang$core$Native_Utils.eq(player.id, id) ? _elm_lang$core$Native_Utils.update(
+					player,
+					{name: model.name}) : player;
+			},
+			model.players);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{players: newPlayers, plays: newPlays, name: '', playerId: _elm_lang$core$Maybe$Nothing});
 	});
 var _user$project$Main$initModel = {
 	players: _elm_lang$core$Native_List.fromArray(
@@ -7927,9 +7991,82 @@ var _user$project$Main$Player = F3(
 	function (a, b, c) {
 		return {id: a, name: b, points: c};
 	});
+var _user$project$Main$add = function (model) {
+	var player = A3(
+		_user$project$Main$Player,
+		_elm_lang$core$List$length(model.players),
+		model.name,
+		0);
+	var newPlayers = A2(_elm_lang$core$List_ops['::'], player, model.players);
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{players: newPlayers, name: ''});
+};
+var _user$project$Main$save = function (model) {
+	var _p0 = model.playerId;
+	if (_p0.ctor === 'Just') {
+		return A2(_user$project$Main$edit, model, _p0._0);
+	} else {
+		return _user$project$Main$add(model);
+	}
+};
 var _user$project$Main$Play = F4(
 	function (a, b, c, d) {
 		return {id: a, playerId: b, name: c, points: d};
+	});
+var _user$project$Main$score = F3(
+	function (model, scorer, points) {
+		var play = A4(
+			_user$project$Main$Play,
+			_elm_lang$core$List$length(model.plays),
+			scorer.id,
+			scorer.name,
+			points);
+		var newPlayers = A2(
+			_elm_lang$core$List$map,
+			function (player) {
+				return _elm_lang$core$Native_Utils.eq(player.id, scorer.id) ? _elm_lang$core$Native_Utils.update(
+					player,
+					{points: player.points + points}) : player;
+			},
+			model.players);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				players: newPlayers,
+				plays: A2(_elm_lang$core$List_ops['::'], play, model.plays)
+			});
+	});
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'Input':
+				return A2(
+					_elm_lang$core$Debug$log,
+					'Input model updated',
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{name: _p1._0}));
+			case 'Cancel':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{name: '', playerId: _elm_lang$core$Maybe$Nothing});
+			case 'Save':
+				return _elm_lang$core$String$isEmpty(model.name) ? model : _user$project$Main$save(model);
+			case 'Score':
+				return A3(_user$project$Main$score, model, _p1._0, _p1._1);
+			case 'Edit':
+				var _p2 = _p1._0;
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						name: _p2.name,
+						playerId: _elm_lang$core$Maybe$Just(_p2.id)
+					});
+			default:
+				return model;
+		}
 	});
 var _user$project$Main$DeletePlay = function (a) {
 	return {ctor: 'DeletePlay', _0: a};
@@ -7982,6 +8119,100 @@ var _user$project$Main$playerForm = function (model) {
 					]))
 			]));
 };
+var _user$project$Main$Score = F2(
+	function (a, b) {
+		return {ctor: 'Score', _0: a, _1: b};
+	});
+var _user$project$Main$Edit = function (a) {
+	return {ctor: 'Edit', _0: a};
+};
+var _user$project$Main$player = function (player) {
+	return A2(
+		_elm_lang$html$Html$li,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$i,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('edit'),
+						_elm_lang$html$Html_Events$onClick(
+						_user$project$Main$Edit(player))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(player.name)
+					])),
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$type$('button'),
+						_elm_lang$html$Html_Events$onClick(
+						A2(_user$project$Main$Score, player, 2))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('2pt')
+					])),
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$type$('button'),
+						_elm_lang$html$Html_Events$onClick(
+						A2(_user$project$Main$Score, player, 3))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('3pt')
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(
+						_elm_lang$core$Basics$toString(player.points))
+					]))
+			]));
+};
+var _user$project$Main$playerList = function (model) {
+	return A2(
+		_elm_lang$html$Html$ul,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Main$player,
+			A2(
+				_elm_lang$core$List$sortBy,
+				function (_) {
+					return _.name;
+				},
+				model.players)));
+};
+var _user$project$Main$playerSection = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$Main$playerListHeader,
+				_user$project$Main$playerList(model),
+				_user$project$Main$pointTotal(model)
+			]));
+};
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -7999,6 +8230,7 @@ var _user$project$Main$view = function (model) {
 					[
 						_elm_lang$html$Html$text('Score Keeper')
 					])),
+				_user$project$Main$playerSection(model),
 				_user$project$Main$playerForm(model),
 				A2(
 				_elm_lang$html$Html$p,
@@ -8014,13 +8246,6 @@ var _user$project$Main$view = function (model) {
 var _user$project$Main$main = {
 	main: _elm_lang$html$Html_App$beginnerProgram(
 		{model: _user$project$Main$initModel, view: _user$project$Main$view, update: _user$project$Main$update})
-};
-var _user$project$Main$Score = F2(
-	function (a, b) {
-		return {ctor: 'Score', _0: a, _1: b};
-	});
-var _user$project$Main$Edit = function (a) {
-	return {ctor: 'Edit', _0: a};
 };
 
 var Elm = {};
