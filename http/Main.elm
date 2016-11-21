@@ -4,59 +4,91 @@ import Html.Events exposing (..)
 import Http
 import Json.Decode as Decode
 
+
+
 main =
   Html.program
-    { init = init "cats" 
+    { init = init "cats"
     , view = view
     , update = update
     , subscriptions = subscriptions
     }
-    
+
+
+
 -- MODEL
 
-type alias Topic = String
-type alias Url = String
+
 type alias Model =
-  { topic : Topic
-  , gifUrl: Url
+  { topic : String
+  , gifUrl : String
+  , content : String
   }
+
+
+type alias Topic = String
 
 init : Topic -> (Model, Cmd Msg)
 init topic =
   ( Model topic "waiting.gif"
   , getRandomGif topic
+  , content ""
   )
-  
+
+
+
 -- UPDATE
 
-type msg
+
+type Msg
   = MorePlease
   | NewGif (Result Http.Error String)
-  
+  | Change String
+
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     MorePlease ->
       (model, getRandomGif model.topic)
-      
+
     NewGif (Ok newUrl) ->
       (Model model.topic newUrl, Cmd.none)
-      
+
     NewGif (Err _) ->
       (model, Cmd.none)
 
+
+-- VIEW
+
+input : Model -> Html Msg
+input model =
+  div []
+    [ input [ placeholder "Enter a topic", onInput Change ] ] []
+    
 view : Model -> Html Msg
 view model =
   div []
-    [ h2 [] [ text model.topic]
+    [ h2 [] [text model.topic]
+    , input model
     , button [ onClick MorePlease ] [ text "More Please!" ]
     , br [] []
     , img [src model.gifUrl] []
     ]
-    
+
+
+
+-- SUBSCRIPTIONS
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
+
+
+
+-- HTTP
+
 
 getRandomGif : Topic -> Cmd Msg
 getRandomGif topic =
@@ -65,8 +97,8 @@ getRandomGif topic =
       "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" ++ topic
   in
     Http.send NewGif (Http.get url decodeGifUrl)
-    
+
+
 decodeGifUrl : Decode.Decoder String
 decodeGifUrl =
-  Decode.at ["data", "image_url"] Decode.String
-  
+  Decode.at ["data", "image_url"] Decode.string

@@ -28,6 +28,11 @@ update msg model =
     Tick newTime ->
       (newTime, Cmd.none)
 
+-- Subscriptions
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Time.every second Tick
+
 -- View
 
 view : Model -> Html Msg
@@ -39,8 +44,8 @@ view model =
     handX =
       toString (50 * 40 * cos angle)
     
-    handY
-      toString (50 + 40 * sin angle)
+    handY =
+      toString (50 * 40 * sin angle)
     
   in
     svg [ viewBox "0 0 100 100", width "300px" ]
