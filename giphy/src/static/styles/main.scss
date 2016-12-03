@@ -1,0 +1,27 @@
+$icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/_mixins.scss';
+@import '~bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+
+// can add Boostrap overrides, additional Sass/CSS below...
+
+.pad-10 {
+  padding: 10px;
+}
+
+.margin-20b {
+  margin-bottom: 20px;
+}
+
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-big {
+
+}
+
+.full-height {
+  min-height: 100vh;
+}

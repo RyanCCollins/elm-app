@@ -1,0 +1,32 @@
+
+-- -*- mode: elm; coding: utf-8 -*- --
+module View exposing (view)
+
+import AppModel exposing (Model, Msg(..))
+
+import Html exposing (Html)
+import Html.Attributes
+import Html.Events exposing (onClick)
+
+
+view : Model -> Html Msg
+view model =
+  let
+    input = Input
+    submit = Submit |> onClick
+  in
+    <div class="container centered full-height">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="jumbotron">
+            <h1 class="display-3 text-center pad-10 margin-20b">Giphy Search</h1>
+            <form class="form-inline centered">
+              <div class="form-group">
+                <input class="form-control form-control-lg" type="text" placeholder="Enter a search string" onInput={ input } />
+                <button class="btn btn-primary" { submit }>Submit</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
