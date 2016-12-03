@@ -7,8 +7,9 @@ import Html exposing (Html)
 
 main : Program Never Model Msg
 main =
-  Html.beginnerProgram
-      { model = initModel
+  Html.program
+      { init = initModel
       , view = view
       , update = update
+      , subscriptions = subscriptions
       }

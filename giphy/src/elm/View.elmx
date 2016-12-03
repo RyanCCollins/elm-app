@@ -12,8 +12,9 @@ import Html.Events exposing (onClick)
 view : Model -> Html Msg
 view model =
   let
+    url = model.url
     input = Input
-    submit = Submit |> onClick
+    submit = Submit
   in
     <div class="container centered full-height">
       <div class="row">
@@ -23,10 +24,13 @@ view model =
             <form class="form-inline centered">
               <div class="form-group">
                 <input class="form-control form-control-lg" type="text" placeholder="Enter a search string" onInput={ input } />
-                <button class="btn btn-primary" { submit }>Submit</a>
+                <button type="button" class="btn btn-primary" onClick={ submit }>Submit</a>
               </div>
             </form>
           </div>
+        </div>
+        <div class="col-xs-12">
+          <img class="img-responsive img-rounded" src={url} />
         </div>
       </div>
     </div>
