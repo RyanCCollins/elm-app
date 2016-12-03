@@ -6,6 +6,7 @@ type alias Model =
   { input: String
   , url: String
   , loading: Bool
+  , title: Maybe String
   }
 
 type Msg
@@ -19,6 +20,7 @@ initModel =
   { input = ""
   , url = ""
   , loading = False
+  , title = Nothing
   }
     ![]
 
@@ -31,7 +33,7 @@ update msg model =
     Submit ->
       ({ model | loading = True }, getRandomGiphy model)
     Request (Ok url) ->
-      { model | url = url, loading = False }
+      { model | url = url, loading = False, title = Just model.input, input = "" }
         ![]
     Request (Err _) ->
       (model, Cmd.none)

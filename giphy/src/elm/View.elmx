@@ -8,7 +8,6 @@ import Html exposing (Html)
 import Html.Attributes
 import Html.Events exposing (onClick)
 
-
 view : Model -> Html Msg
 view model =
   let
@@ -23,14 +22,40 @@ view model =
             <h1 class="display-3 text-center pad-10 margin-20b">Giphy Search</h1>
             <form class="form-inline centered">
               <div class="form-group">
-                <input class="form-control form-control-lg" type="text" placeholder="Enter a search string" onInput={ input } />
+                <input class="form-control form-control-lg" type="text" placeholder="Enter a search string" onInput={ input } value={model.input} />
                 <button type="button" class="btn btn-primary" onClick={ submit }>Submit</a>
               </div>
             </form>
           </div>
         </div>
-        <div class="col-xs-12">
+        {renderTitle model}
+        <div class="col-xs-12 centered">
+          <div class="loading-wrapper">
+            {loading model}
+          </div>
+        </div>
+        <div class="col-xs-12 centered">
           <img class="img-responsive img-rounded" src={url} />
         </div>
       </div>
     </div>
+
+loading : Model -> Html Msg
+loading model =
+  case model.loading of
+    True ->
+      <div class="loading">
+        <progress class="progress progress-striped progress-animated" value="25" max="100"></progress>
+      </div>
+    False ->
+      <div></div>
+
+renderTitle : Model -> Html Msg
+renderTitle model =
+  case model.title of
+    Just val ->
+      <div class="col-xs-12 centered">
+        <h2 class="display-3">{=val}</h2>
+      </div>
+    Nothing ->
+      <div></div>
